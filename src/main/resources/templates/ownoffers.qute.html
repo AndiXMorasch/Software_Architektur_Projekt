@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ihre Mitnahmeangebote</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+    />
+    <link rel="icon" type="image/svg" href="/car.svg" />
+
+    <style>
+      body {
+        background-color: lightgray;
+      }
+    </style>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand mb-0 h1" href="/">
+          StudCar
+          <img src="/car.svg" alt="StudCar" width="30px" />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/view/offers"
+                >Mitnahmeangebote</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/view/requests">Mitnahmeanfragen</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/view/user">Über dich</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </head>
+
+  <body>
+    {#for offer in ownOffers}
+    <div
+      class="card"
+      style="margin-top: 15px; margin-left: 15px; margin-right: 15px"
+    >
+      <div class="card-header">Fahrer {offer.driverId}</div>
+      <div class="card-body">
+        <img
+          src="/defaultProfilePicture.jpg"
+          width="100"
+          height="100"
+          class="rounded float-start"
+          alt="defaultProfilePicture"
+          style="margin-right: 15px"
+        />
+        <h5 class="card-title">
+          Mitnahmeangebot Strecke: {offer.startLocation} &#8594;
+          {offer.destinationCampus}
+        </h5>
+        <span class="badge rounded-pill text-bg-info"
+          >Am: {offer.driveDate}</span
+        >
+        {#if offer.freeSeats != 0}
+        <span class="badge rounded-pill text-bg-info"
+          >{offer.freeSeats} freie Sitze</span
+        >
+        {#else}
+        <span class="badge rounded-pill text-bg-danger"
+          >{offer.freeSeats} freie Sitze</span
+        >
+        {/if}
+        <span class="badge rounded-pill text-bg-info"
+          >Start: {offer.startLocation}</span
+        >
+        <span class="badge rounded-pill text-bg-info"
+          >Ziel: {offer.destinationCampus}</span
+        >
+        <span class="badge rounded-pill text-bg-info"
+          >Ankunft: {offer.arrivalTime} Uhr</span
+        >
+        <br /><br />
+        <p class="card-text"><b>Kurzbeschreibung:</b> {offer.description}</p>
+
+        <p>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseEditMode"
+            aria-expanded="false"
+            aria-controls="collapseEditMode"
+          >
+            Bearbeiten <i class="bi bi-pencil"></i>
+          </button>
+        </p>
+        <div class="collapse" id="collapseEditMode">
+          <div class="card card-body">
+            <form action="javascript:saveOfferModifications({offer.id})">
+              <div class="mb-3">
+                <label for="startLocation" class="form-label"
+                  ><b>Abfahrtsort</b> (Pflichtfeld)
+                </label>
+                <input
+                  type="text"
+                  value="{offer.startLocation}"
+                  class="form-control"
+                  id="startLocation"
+                  aria-describedby="startLocationHelp"
+                  required
+                />
+                <div id="startLocationHelp" class="form-text">
+                  Wo befindet sich der Abfahrtsort?
+                </div>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col">
+                  <label for="campusPicker" class="form-label"
+                    ><b>Zielcampus</b> (Pflichtfeld)
+                  </label>
+                  <select
+                    class="form-select"
+                    selected="{offer.destinationCampus}"
+                    id="campusPicker"
+                    aria-label="Choose Campus"
+                    required
+                  >
+                    {#if !offer.destinationCampus.equals("Caprivi")}
+                    <option value="Caprivi">Caprivi</option>
+                    {#else}
+                    <option value="Caprivi" selected>Caprivi</option>
+                    {/if} {#if !offer.destinationCampus.equals("Haste")}
+                    <option value="Haste">Haste</option>
+                    {#else}
+                    <option value="Haste" selected>Haste</option>
+                    {/if} {#if !offer.destinationCampus.equals("Lingen")}
+                    <option value="Lingen">Lingen</option>
+                    {#else}
+                    <option value="Lingen" selected>Lingen</option>
+                    {/if} {#if !offer.destinationCampus.equals("Westerberg")}
+                    <option value="Westerberg">Westerberg</option>
+                    {#else}
+                    <option value="Westerberg" selected>Westerberg</option>
+                    {/if}
+                  </select>
+                  <div id="campusPickerHelp" class="form-text">
+                    Zu welchem Campus möchten Sie fahren?
+                  </div>
+                </div>
+                <div class="col">
+                  <label for="seatPicker" class="form-label"
+                    ><b>Anzahl freier Sitze</b> (Pflichtfeld)
+                  </label>
+                  <select
+                    class="form-select"
+                    id="seatPicker"
+                    aria-label="Choose Seats"
+                    required
+                  >
+                    {#if offer.freeSeats == 1L}
+                    <option value="1" selected>1 Sitz</option>
+                    {#else}
+                    <option value="1">1 Sitz</option>
+                    {/if} {#if offer.freeSeats == 2L}
+                    <option value="2" selected>2 Sitze</option>
+                    {#else}
+                    <option value="2">2 Sitze</option>
+                    {/if} {#if offer.freeSeats == 3L}
+                    <option value="3" selected>3 Sitze</option>
+                    {#else}
+                    <option value="3">3 Sitze</option>
+                    {/if} {#if offer.freeSeats == 4L}
+                    <option value="4" selected>4 Sitze</option>
+                    {#else}
+                    <option value="4">4 Sitze</option>
+                    {/if} {#if offer.freeSeats == 5L}
+                    <option value="5" selected>5 Sitze</option>
+                    {#else}
+                    <option value="5">5 Sitze</option>
+                    {/if} {#if offer.freeSeats == 6L}
+                    <option value="6" selected>6 Sitze</option>
+                    {#else}
+                    <option value="6">6 Sitze</option>
+                    {/if} {#if offer.freeSeats == 7L}
+                    <option value="7" selected>7 Sitze</option>
+                    {#else}
+                    <option value="7">7 Sitze</option>
+                    {/if} {#if offer.freeSeats == 8L}
+                    <option value="8" selected>8 Sitze</option>
+                    {#else}
+                    <option value="8">8 Sitze</option>
+                    {/if}
+                  </select>
+                  <div id="seatPickerHelp" class="form-text">
+                    Wie viele freie Sitze bieten Sie an?
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="driveDate" class="form-label"
+                  ><b>Datum der Fahrt</b> (Pflichtfeld)
+                </label>
+                <input
+                  type="date"
+                  value="{offer.driveDate}"
+                  class="form-control"
+                  id="driveDate"
+                  aria-describedby="driveDateHelp"
+                  required
+                />
+                <div id="driveDateHelp" class="form-text">
+                  An welchem Datum werden Sie fahren?
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="arrivalTime" class="form-label"
+                  ><b>Ankunftszeit</b> (Pflichtfeld)
+                </label>
+                <input
+                  type="time"
+                  value="{offer.arrivalTime}"
+                  class="form-control"
+                  id="arrivalTime"
+                  aria-describedby="arrivalTimeHelp"
+                  required
+                />
+                <div id="arrivalTimeHelp" class="form-text">
+                  Zu welcher Zeit möchten Sie am Campus ankommen?
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label">
+                  <b>Beschreibung</b>
+                </label>
+                <textarea class="form-control" id="description" rows="3">
+                {offer.description}
+              </textarea
+                >
+                <div id="descriptionHelp" class="form-text">
+                  Hier können Sie dem Mitfahrer / der Mitfahrerin noch etwas
+                  mitteilen.
+                </div>
+              </div>
+              <button type="submit" class="btn btn-secondary">Speichern</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <ul class="list-group">
+        <div class="card-header">
+          <h4>Mitnahmeanfragen</h4>
+        </div>
+        {#for rideRequest in offer.rideRequests} {#if rideRequest.isActive}
+        <div class="card-body">
+          <img
+            src="/defaultProfilePicture.jpg"
+            width="100"
+            height="100"
+            class="rounded float-start"
+            alt="defaultProfilePicture"
+            style="margin-right: 15px"
+          />
+          <h5 class="card-title">
+            Mitnahmeanfrage von {rideRequest.passengerId}
+          </h5>
+          {#if rideRequest.accepted}
+          <span class="badge rounded-pill text-bg-success"
+            >Status: akzeptiert</span
+          >
+          {#else if !rideRequest.active}
+          <span class="badge rounded-pill text-bg-danger"
+            >Status: abgelehnt</span
+          >
+          {#else}
+          <span class="badge rounded-pill text-bg-warning">Status: offen</span>
+          {/if}
+          <span class="badge rounded-pill text-bg-info"
+            >Abholort: {rideRequest.pickUpLocation}</span
+          >
+          <span class="badge rounded-pill text-bg-info"
+            >Abholzeitpunkt: {rideRequest.pickUpTime} Uhr</span
+          >
+          <span class="badge rounded-pill text-bg-info"
+            >Ziel: {rideRequest.destinationCampus}</span
+          >
+          <br /><br />
+          <p class="card-text">
+            <b>Nachricht vom Mitfahrer: </b> {rideRequest.description}
+          </p>
+          {#if !rideRequest.isAccepted && offer.freeSeats != 0}
+          <button
+            type="button"
+            class="btn btn-success"
+            onclick="acceptRideRequest('{rideRequest.id}')"
+          >
+            Annehmen <i class="bi bi-check2"></i>
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-danger"
+            onclick="rejectRideRequest('{rideRequest.id}')"
+          >
+            Ablehnen <i class="bi bi-x-circle"></i>
+          </button>
+          {#else}
+          <button type="button" class="btn btn-success" disabled>
+            Annehmen <i class="bi bi-check2"></i>
+          </button>
+
+          <button type="button" class="btn btn-danger" disabled>
+            Ablehnen <i class="bi bi-x-circle"></i>
+          </button>
+          {/if}
+          <hr class="hr" />
+          {/if}
+        </div>
+        {/for}
+      </ul>
+    </div>
+    {/for}
+
+    <script>
+      async function saveOfferModifications(offerId) {
+        startLocation = document.getElementById("startLocation").value;
+        destinationCampus = document.getElementById("campusPicker").value;
+        freeSeats = document.getElementById("seatPicker").value;
+        driveDate = getStringFromDriveDate();
+        arrivalTime = document.getElementById("arrivalTime").value;
+        description = document.getElementById("description").value;
+
+        dataToSend = JSON.stringify({
+          id: offerId,
+          startLocation: startLocation,
+          destinationCampus: destinationCampus,
+          driveDate: driveDate,
+          arrivalTime: arrivalTime,
+          freeSeats: freeSeats,
+          active: true,
+          description: description,
+        });
+
+        const response = await fetch(
+          "http://localhost:8080/offers/" + offerId,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: dataToSend,
+          }
+        );
+
+        window.location.assign(location);
+      }
+
+      function getStringFromDriveDate() {
+        var datepicker = document.getElementById("driveDate");
+        var dateValue = new Date(datepicker.value);
+
+        var day = dateValue.getDate();
+        var month = dateValue.getMonth() + 1;
+        var year = dateValue.getFullYear();
+
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+
+        return year + "-" + month + "-" + day;
+      }
+
+      async function acceptRideRequest(rideRequestId) {
+        const responseAcceptRideRequest = await fetch(
+          "http://localhost:8080/offers/riderequests/" +
+            rideRequestId +
+            "/accept",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        location.reload();
+      }
+
+      async function rejectRideRequest(rideRequestId) {
+        const response = await fetch(
+          "http://localhost:8080/offers/riderequests/" +
+            rideRequestId +
+            "/reject",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        location.reload();
+      }
+    </script>
+  </body>
+</html>

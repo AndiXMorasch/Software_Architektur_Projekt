@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mitnahmeangebot erstellen</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <link rel="icon" type="image/svg" href="/car.svg" />
+
+    <style>
+      body {
+        background-color: lightgray;
+      }
+    </style>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand mb-0 h1" href="/">
+          StudCar
+          <img src="/car.svg" alt="StudCar" width="30px" />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/view/offers"
+                >Mitnahmeangebote</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/view/requests">Mitnahmeanfragen</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/view/user">Über dich</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </head>
+
+  <body>
+    <div
+      class="card"
+      style="margin-top: 15px; margin-left: 15px; margin-right: 15px"
+    >
+      <div class="card-header">
+        <h4>Mitnahmeangebot erstellen</h4>
+      </div>
+      <div class="card-body">
+        <form action="javascript:createOffer()">
+          <div class="mb-3">
+            <label for="startLocation" class="form-label"
+              ><b>Abfahrtsort</b> (Pflichtfeld)
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="startLocation"
+              aria-describedby="startLocationHelp"
+              required
+            />
+            <div id="startLocationHelp" class="form-text">
+              Wo befindet sich der Abfahrtsort?
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col">
+              <label for="campusPicker" class="form-label"
+                ><b>Zielcampus</b> (Pflichtfeld)
+              </label>
+              <select
+                class="form-select"
+                id="campusPicker"
+                aria-label="Choose Campus"
+                required
+              >
+                <option value="Caprivi">Caprivi</option>
+                <option value="Haste">Haste</option>
+                <option value="Lingen">Lingen</option>
+                <option value="Westerberg">Westerberg</option>
+              </select>
+              <div id="campusPickerHelp" class="form-text">
+                Zu welchem Campus möchten Sie fahren?
+              </div>
+            </div>
+            <div class="col">
+              <label for="seatPicker" class="form-label"
+                ><b>Anzahl freier Sitze</b> (Pflichtfeld)
+              </label>
+              <select
+                class="form-select"
+                id="seatPicker"
+                aria-label="Choose Seats"
+                required
+              >
+                <option value="1">1 Sitz</option>
+                <option value="2">2 Sitze</option>
+                <option value="3">3 Sitze</option>
+                <option value="4">4 Sitze</option>
+                <option value="5">5 Sitze</option>
+                <option value="6">6 Sitze</option>
+                <option value="7">7 Sitze</option>
+                <option value="8">8 Sitze</option>
+              </select>
+              <div id="seatPickerHelp" class="form-text">
+                Wie viele freie Sitze bieten Sie an?
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="driveDate" class="form-label"
+              ><b>Datum der Fahrt</b> (Pflichtfeld)
+            </label>
+            <input
+              type="date"
+              class="form-control"
+              id="driveDate"
+              aria-describedby="driveDateHelp"
+              required
+            />
+            <div id="driveDateHelp" class="form-text">
+              An welchem Datum werden Sie fahren?
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="arrivalTime" class="form-label"
+              ><b>Ankunftszeit</b> (Pflichtfeld)
+            </label>
+            <input
+              type="time"
+              class="form-control"
+              id="arrivalTime"
+              aria-describedby="arrivalTimeHelp"
+              required
+            />
+            <div id="arrivalTimeHelp" class="form-text">
+              Zu welcher Zeit möchten Sie am Campus ankommen?
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label"
+              ><b>Beschreibung</b></label
+            >
+            <textarea class="form-control" id="description" rows="3"></textarea>
+            <div id="descriptionHelp" class="form-text">
+              Hier können Sie dem Mitfahrer / der Mitfahrerin noch etwas
+              mitteilen.
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary">
+            Angebot erstellen
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Datepicker mit aktuellem Datum versehen
+      dpSetTodaysDate();
+
+      // Datepicker Mindestdatum mit aktuellem Datum versehen
+      dpSetMinDate();
+
+      // Timepicker mit aktueller Zeit versehen
+      tpSetCurrentTime();
+
+      async function createOffer() {
+        startLocation = document.getElementById("startLocation").value;
+        destinationCampus = document.getElementById("campusPicker").value;
+        freeSeats = document.getElementById("seatPicker").value;
+        driveDate = getStringFromDriveDate();
+        arrivalTime = document.getElementById("arrivalTime").value;
+        description = document.getElementById("description").value;
+
+        dataToSend = JSON.stringify({
+          startLocation: startLocation,
+          destinationCampus: destinationCampus,
+          driveDate: driveDate,
+          arrivalTime: arrivalTime,
+          freeSeats: freeSeats,
+          description: description,
+        });
+
+        const response = await fetch("http://localhost:8080/offers", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: dataToSend,
+        });
+
+        let location = "http://localhost:8080/view/offers";
+
+        window.location.assign(location);
+      }
+
+      function getStringFromDriveDate() {
+        var datepicker = document.getElementById("driveDate");
+        var dateValue = new Date(datepicker.value);
+
+        var day = dateValue.getDate();
+        var month = dateValue.getMonth() + 1;
+        var year = dateValue.getFullYear();
+
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+
+        return year + "-" + month + "-" + day;
+      }
+
+      // Quelle: https://stackoverflow.com/questions/6982692/how-to-set-input-type-dates-default-value-to-today
+      function dpSetTodaysDate() {
+        var today = new Date();
+        var day = today.getDate();
+        var month = today.getMonth() + 1;
+        var year = today.getFullYear();
+
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+
+        var today = year + "-" + month + "-" + day;
+        document.getElementById("driveDate").value = today;
+      }
+
+      // Quelle: https://stackoverflow.com/questions/32378590/set-date-input-fields-max-date-to-today
+      function dpSetMinDate() {
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+
+        if (dd < 10) {
+          dd = "0" + dd;
+        }
+
+        if (mm < 10) {
+          mm = "0" + mm;
+        }
+
+        today = yyyy + "-" + mm + "-" + dd;
+        document.getElementById("driveDate").setAttribute("min", today);
+      }
+
+      function tpSetCurrentTime() {
+        var today = new Date();
+        var hours = today.getHours();
+        var minutes = today.getMinutes();
+
+        if (hours < 10) hours = "0" + month;
+        if (minutes < 10) minutes = "0" + minutes;
+
+        var time = hours + ":" + minutes;
+
+        document.getElementById("arrivalTime").setAttribute("value", time);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mitnahmeanfragen</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+    />
+    <link rel="icon" type="image/svg" href="/car.svg" />
+
+    <style>
+      body {
+        background-color: lightgray;
+      }
+    </style>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand mb-0 h1" href="/">
+          StudCar
+          <img src="/car.svg" alt="StudCar" width="30px" />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/view/offers">Mitnahmeangebote</a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="/view/requests"
+                >Mitnahmeanfragen</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/view/user">Über dich</a>
+            </li>
+          </ul>
+
+          {#if !newOffersAvailable}
+          <button class="btn" onclick="openOwnRequests()">
+            <i class="bi bi-list-task"></i>
+          </button>
+          {#else}
+          <button class="btn" onclick="openOwnRequests()">
+            <i style="color: red" class="bi bi-list-task"></i>
+          </button>
+          {/if}
+
+          <button class="btn" onclick="openRequestCreation()">
+            <i class="bi bi-plus-circle"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </head>
+
+  <body>
+    <div
+      class="card"
+      style="margin-top: 15px; margin-left: 15px; margin-right: 15px"
+    >
+      <div class="card-header">
+        <div class="row g-3">
+          <div class="col-sm-4">
+            <b>Sortieren </b><i class="bi bi-filter"></i>
+          </div>
+
+          <div class="col-sm-4"><b>Filter </b><i class="bi bi-funnel"></i></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-sm-4">
+            <select class="form-select" id="sortBy" aria-label="Sortierung">
+              <option value="earliest">Frühste</option>
+              <option selected value="latest">Späteste</option>
+            </select>
+          </div>
+
+          <div class="col-sm-4">
+            <input
+              type="date"
+              class="form-control"
+              id="driveDate"
+              aria-describedby="driveDateHelp"
+              required
+            />
+          </div>
+
+          <div class="col-sm-3">
+            <select
+              class="form-select"
+              id="destinationCampus"
+              aria-label="Zielcampus"
+            >
+              <option selected value="null">Zielcampus</option>
+              <option value="Caprivi">Caprivi</option>
+              <option value="Haste">Haste</option>
+              <option value="Lingen">Lingen</option>
+              <option value="Westerberg">Westerberg</option>
+            </select>
+          </div>
+
+          <div class="col">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="applyFilters()"
+            >
+              Finden <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {#for request in requests}
+    <div
+      class="card"
+      style="margin-top: 15px; margin-left: 15px; margin-right: 15px"
+    >
+      <div class="card-header">Mitfahrer {request.passengerId}</div>
+      <div class="card-body">
+        <img
+          src="/defaultProfilePicture.jpg"
+          width="100"
+          height="100"
+          class="rounded float-start"
+          alt="defaultProfilePicture"
+          style="margin-right: 15px"
+        />
+        <h5 class="card-title">
+          Mitnahmeanfrage Strecke: {request.pickUpLocation} &#8594;
+          {request.destinationCampus}
+        </h5>
+        <span class="badge rounded-pill text-bg-info"
+          >Am: {request.driveDate}</span
+        >
+        <span class="badge rounded-pill text-bg-info"
+          >Start: {request.pickUpLocation}</span
+        >
+        <span class="badge rounded-pill text-bg-info"
+          >Ziel: {request.destinationCampus}</span
+        >
+        <span class="badge rounded-pill text-bg-info"
+          >Ankunft: {request.arrivalTime} Uhr</span
+        >
+        <br /><br />
+        <p class="card-text"><b>Kurzbeschreibung:</b> {request.description}</p>
+        {#if request.isActive}
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="openDriveOfferCreation('{request.id}')"
+        >
+          Mitnahmeangebot senden
+        </button>
+        {#else}
+        <button type="button" class="btn btn-secondary" disabled>
+          Mitnahmeangebot senden
+        </button>
+        {/if}
+      </div>
+    </div>
+    {/for}
+
+    <script>
+      initializeFilters();
+
+      function initializeFilters() {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const sortingParam = urlParams.get("sorting");
+        const driveDateParam = urlParams.get("driveDate");
+        const destinationCampusParam = urlParams.get("destinationCampus");
+
+        if (sortingParam !== null) {
+          const $sortBy = document.querySelector("#sortBy");
+          $sortBy.value = sortingParam;
+        }
+
+        if (driveDateParam !== null) {
+          const $driveDate = document.querySelector("#driveDate");
+          $driveDate.value = driveDateParam;
+        } else {
+          //initializeTodaysDate();
+        }
+
+        if (destinationCampusParam !== null) {
+          const $destinationCampus =
+            document.querySelector("#destinationCampus");
+          $destinationCampus.value = destinationCampusParam;
+        }
+      }
+
+      // Kann verwendet werden um den Tag im Filter automatisch zu setzen
+      function initializeTodaysDate() {
+        var today = new Date();
+        var day = today.getDate();
+        var month = today.getMonth() + 1;
+        var year = today.getFullYear();
+
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+
+        var today = year + "-" + month + "-" + day;
+        document.getElementById("driveDate").value = today;
+      }
+
+      function applyFilters() {
+        let location = "http://localhost:8080/view/requests";
+
+        sorting = document.getElementById("sortBy").value;
+        driveDate = document.getElementById("driveDate").value;
+        destinationCampus = document.getElementById("destinationCampus").value;
+
+        location += "?sorting=" + sorting;
+
+        if (driveDate !== "") {
+          location += "&driveDate=" + driveDate;
+        }
+
+        if (destinationCampus !== "null") {
+          location += "&destinationCampus=" + destinationCampus;
+        }
+
+        window.location.assign(location);
+      }
+
+      function openOwnRequests() {
+        window.location.assign("http://localhost:8080/view/requests/user");
+      }
+
+      function openRequestCreation() {
+        window.location.assign("http://localhost:8080/view/requests/create");
+      }
+
+      function openDriveOfferCreation(requestId) {
+        window.location.assign(
+          "http://localhost:8080/view/requests/createDriveOffer?requestid=" +
+            requestId
+        );
+      }
+    </script>
+  </body>
+</html>

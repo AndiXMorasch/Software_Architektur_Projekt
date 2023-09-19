@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Mitnahmeanfrage erstellen</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
+  <link rel="icon" type="image/svg" href="/car.svg" />
+
+  <style>
+    body {
+      background-color: lightgray;
+    }
+  </style>
+
+  <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand mb-0 h1" href="/">
+        StudCar
+        <img src="/car.svg" alt="StudCar" width="30px" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/view/offers">Mitnahmeangebote</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/view/requests">Mitnahmeanfragen</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/view/user">Über dich</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</head>
+
+<body>
+  <div class="card" style="margin-top: 15px; margin-left: 15px; margin-right: 15px">
+    <div class="card-header">Fahrer {driverName}</div>
+    <div class="card-body">
+      <img src="/defaultProfilePicture.jpg" width="100" height="100" class="rounded float-start"
+        alt="defaultProfilePicture" style="margin-right: 15px" />
+      <h5 class="card-title">
+        Mitnahmeangebot Strecke: {offer.startLocation} &#8594;
+        {offer.destinationCampus}
+      </h5>
+      <span class="badge rounded-pill text-bg-info">Am: {offer.driveDate}</span>
+      <span class="badge rounded-pill text-bg-info">{offer.freeSeats} freie Sitze</span>
+      <span class="badge rounded-pill text-bg-info">Start: {offer.startLocation}</span>
+      <span class="badge rounded-pill text-bg-info">Ziel: {offer.destinationCampus}</span>
+      <span class="badge rounded-pill text-bg-info">Ankunft: {offer.arrivalTime}</span>
+      <br /><br />
+      <p class="card-text"><b>Kurzbeschreibung:</b> {offer.description}</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 15px; margin-left: 15px; margin-right: 15px">
+    <div class="card-header">
+      <h4>Mitnahmeanfrage erstellen</h4>
+    </div>
+    <div class="card-body">
+      <form action="javascript:sendRideRequest('{offer.id}')">
+        <div class="mb-3">
+          <label for="pickUpLocation" class="form-label"><b>Abholort</b> (Pflichtfeld)
+          </label>
+          <input type="text" class="form-control" id="pickUpLocation" aria-describedby="pickUpLocationHelp" required />
+          <div id="pickUpLocationHelp" class="form-text">
+            Wo möchten Sie abgeholt werden?
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="pickUpTime" class="form-label"><b>Abholzeitpunkt</b> (Pflichtfeld)
+          </label>
+          <input type="time" class="form-control" id="pickUpTime" aria-describedby="pickUpTimeHelp" required />
+          <div id="pickUpTimeHelp" class="form-text">
+            Wann möchten Sie abgeholt werden?
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="campusPicker" class="form-label"><b>Zielcampus</b> (Pflichtfeld)
+          </label>
+          <select class="form-select" id="campusPicker" aria-label="Choose Campus" required>
+            <option value="Caprivi">Caprivi</option>
+            <option value="Haste">Haste</option>
+            <option value="Lingen">Lingen</option>
+            <option value="Westerberg">Westerberg</option>
+          </select>
+          <div id="campusPickerHelp" class="form-text">
+            Zu welchem Campus möchten Sie gebracht werden?
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label"><b>Beschreibung</b></label>
+          <textarea class="form-control" id="description" rows="3"></textarea>
+          <div id="descriptionHelp" class="form-text">
+            Hier können Sie dem Fahrer / der Fahrerin noch etwas mitteilen.
+            Gibt es z. B. besondere Abholumstände?
+          </div>
+        </div>
+        <button type="submit" class="btn btn-secondary">Abschicken</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Timepicker mit aktueller Zeit versehen
+    tpSetCurrentTime();
+
+    async function sendRideRequest(offerId) {
+      pickUpLocation = document.getElementById("pickUpLocation").value;
+      pickUpTime = document.getElementById("pickUpTime").value;
+      destinationCampus = document.getElementById("campusPicker").value;
+      description = document.getElementById("description").value;
+
+      dataToSend = JSON.stringify({
+        pickUpLocation: pickUpLocation,
+        pickUpTime: pickUpTime,
+        destinationCampus: destinationCampus,
+        description: description,
+      });
+
+      const response = await fetch(
+        "http://localhost:8080/offers/" + offerId,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: dataToSend,
+        }
+      );
+
+      let location = "http://localhost:8080/view/offers";
+      window.location.assign(location);
+    }
+
+    function tpSetCurrentTime() {
+      var today = new Date();
+      var hours = today.getHours();
+      var minutes = today.getMinutes();
+
+      if (hours < 10) hours = "0" + month;
+      if (minutes < 10) minutes = "0" + minutes;
+
+      var time = hours + ":" + minutes;
+
+      document.getElementById("pickUpTime").setAttribute("value", time);
+    }
+  </script>
+</body>
+
+</html>

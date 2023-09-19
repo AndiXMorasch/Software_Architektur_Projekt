@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ihre Mitnahmeanfragen</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+    />
+    <link rel="icon" type="image/svg" href="/car.svg" />
+
+    <style>
+      body {
+        background-color: lightgray;
+      }
+    </style>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand mb-0 h1" href="/">
+          StudCar
+          <img src="/car.svg" alt="StudCar" width="30px" />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/view/offers">Mitnahmeangebote</a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="/view/requests"
+                >Mitnahmeanfragen</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/view/user">Über dich</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </head>
+
+  <body>
+    {#for request in ownRequests}
+    <div
+      class="card"
+      style="margin-top: 15px; margin-left: 15px; margin-right: 15px"
+    >
+      <div class="card-header">Mitfahrer {request.passengerId}</div>
+      <div class="card-body">
+        <img
+          src="/defaultProfilePicture.jpg"
+          width="100"
+          height="100"
+          class="rounded float-start"
+          alt="defaultProfilePicture"
+          style="margin-right: 15px"
+        />
+        <h5 class="card-title">
+          Mitnahmeanfrage Strecke: {request.pickUpLocation} &#8594;
+          {request.destinationCampus}
+        </h5>
+        <span class="badge rounded-pill text-bg-info"
+          >Am: {request.driveDate}</span
+        >
+        <span class="badge rounded-pill text-bg-info"
+          >Start: {request.pickUpLocation}</span
+        >
+        <span class="badge rounded-pill text-bg-info"
+          >Ziel: {request.destinationCampus}</span
+        >
+        <span class="badge rounded-pill text-bg-info"
+          >Ankunft: {request.arrivalTime} Uhr</span
+        >
+        <br /><br />
+        <p class="card-text"><b>Kurzbeschreibung:</b> {request.description}</p>
+
+        <p>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseEditMode"
+            aria-expanded="false"
+            aria-controls="collapseEditMode"
+          >
+            Bearbeiten <i class="bi bi-pencil"></i>
+          </button>
+        </p>
+        <div class="collapse" id="collapseEditMode">
+          <div class="card card-body">
+            <form action="javascript:saveRequestModifications({request.id})">
+              <div class="mb-3">
+                <label for="pickUpLocation" class="form-label"
+                  ><b>Abfahrtsort</b> (Pflichtfeld)
+                </label>
+                <input
+                  type="text"
+                  value="{request.pickUpLocation}"
+                  class="form-control"
+                  id="pickUpLocation"
+                  aria-describedby="pickUpLocationHelp"
+                  required
+                />
+                <div id="pickUpLocationHelp" class="form-text">
+                  Wo befindet sich der Abholort?
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="campusPicker" class="form-label"
+                  ><b>Zielcampus</b> (Pflichtfeld)
+                </label>
+                <select
+                  class="form-select"
+                  selected="{request.destinationCampus}"
+                  id="campusPicker"
+                  aria-label="Choose Campus"
+                  required
+                >
+                  {#if !request.destinationCampus.equals("Caprivi")}
+                  <option value="Caprivi">Caprivi</option>
+                  {#else}
+                  <option value="Caprivi" selected>Caprivi</option>
+                  {/if} {#if !request.destinationCampus.equals("Haste")}
+                  <option value="Haste">Haste</option>
+                  {#else}
+                  <option value="Haste" selected>Haste</option>
+                  {/if} {#if !request.destinationCampus.equals("Lingen")}
+                  <option value="Lingen">Lingen</option>
+                  {#else}
+                  <option value="Lingen" selected>Lingen</option>
+                  {/if} {#if !request.destinationCampus.equals("Westerberg")}
+                  <option value="Westerberg">Westerberg</option>
+                  {#else}
+                  <option value="Westerberg" selected>Westerberg</option>
+                  {/if}
+                </select>
+                <div id="campusPickerHelp" class="form-text">
+                  Zu welchem Campus möchten Sie gefahren werden?
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="driveDate" class="form-label"
+                  ><b>Datum der Fahrt</b> (Pflichtfeld)
+                </label>
+                <input
+                  type="date"
+                  value="{request.driveDate}"
+                  class="form-control"
+                  id="driveDate"
+                  aria-describedby="driveDateHelp"
+                  required
+                />
+                <div id="driveDateHelp" class="form-text">
+                  An welchem Datum möchten Sie fahren?
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="arrivalTime" class="form-label"
+                  ><b>Ankunftszeit</b> (Pflichtfeld)
+                </label>
+                <input
+                  type="time"
+                  value="{request.arrivalTime}"
+                  class="form-control"
+                  id="arrivalTime"
+                  aria-describedby="arrivalTimeHelp"
+                  required
+                />
+                <div id="arrivalTimeHelp" class="form-text">
+                  Zu welcher Zeit möchten Sie am Campus ankommen?
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label"
+                  ><b>Beschreibung</b></label
+                >
+                <textarea class="form-control" id="description" rows="3">
+{request.description}</textarea
+                >
+                <div id="descriptionHelp" class="form-text">
+                  Hier können Sie dem Mitfahrer / der Mitfahrerin noch etwas
+                  mitteilen.
+                </div>
+              </div>
+              <button type="submit" class="btn btn-secondary">Speichern</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <ul class="list-group">
+        <div class="card-header">
+          <h4>Mitnahmeangebote</h4>
+        </div>
+        {#for driveOffer in request.driveOffers} {#if driveOffer.isActive}
+        <div class="card-body">
+          <img
+            src="/defaultProfilePicture.jpg"
+            width="100"
+            height="100"
+            class="rounded float-start"
+            alt="defaultProfilePicture"
+            style="margin-right: 15px"
+          />
+          <h5 class="card-title">Mitnahmeangebot von {driveOffer.driverId}</h5>
+          {#if driveOffer.accepted}
+          <span class="badge rounded-pill text-bg-success">
+            Status: akzeptiert
+          </span>
+          {#else if !driveOffer.active}
+          <span class="badge rounded-pill text-bg-danger">
+            Status: abgelehnt
+          </span>
+          {#else}
+          <span class="badge rounded-pill text-bg-warning">Status: offen</span>
+          {/if}
+          <span class="badge rounded-pill text-bg-info">
+            Abholort: {driveOffer.pickUpLocation}
+          </span>
+          <span class="badge rounded-pill text-bg-info">
+            Abholzeitpunkt: {driveOffer.pickUpTime} Uhr
+          </span>
+          <span class="badge rounded-pill text-bg-info">
+            Ziel: {driveOffer.destinationCampus}
+          </span>
+          <br /><br />
+          <p class="card-text">
+            <b>Nachricht vom Fahrer: </b> {driveOffer.description}
+          </p>
+          {#if !driveOffer.isAccepted && driveOffer.isActive}
+          <button
+            type="button"
+            class="btn btn-success"
+            onclick="acceptDriveOffer('{driveOffer.id}')"
+          >
+            Annehmen <i class="bi bi-check2"></i>
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-danger"
+            onclick="rejectDriveOffer('{driveOffer.id}')"
+          >
+            Ablehnen <i class="bi bi-x-circle"></i>
+          </button>
+          {#else}
+          <button type="button" class="btn btn-success" disabled>
+            Annehmen <i class="bi bi-check2"></i>
+          </button>
+
+          <button type="button" class="btn btn-danger" disabled>
+            Ablehnen <i class="bi bi-x-circle"></i>
+          </button>
+          {/if}
+          <hr class="hr" />
+        </div>
+        {/if} {/for}
+      </ul>
+    </div>
+    {/for}
+
+    <script>
+      async function saveRequestModifications(requestId) {
+        pickUpLocation = document.getElementById("pickUpLocation").value;
+        destinationCampus = document.getElementById("campusPicker").value;
+        driveDate = getStringFromDriveDate();
+        arrivalTime = document.getElementById("arrivalTime").value;
+        description = document.getElementById("description").value;
+
+        dataToSend = JSON.stringify({
+          id: requestId,
+          pickUpLocation: pickUpLocation,
+          arrivalTime: arrivalTime,
+          destinationCampus: destinationCampus,
+          driveDate: driveDate,
+          description: description,
+        });
+
+        const response = await fetch(
+          "http://localhost:8080/requests/" + requestId,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: dataToSend,
+          }
+        );
+
+        window.location.assign(location);
+      }
+
+      function getStringFromDriveDate() {
+        var datepicker = document.getElementById("driveDate");
+        var dateValue = new Date(datepicker.value);
+
+        var day = dateValue.getDate();
+        var month = dateValue.getMonth() + 1;
+        var year = dateValue.getFullYear();
+
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+
+        return year + "-" + month + "-" + day;
+      }
+
+      async function acceptDriveOffer(driveOfferId) {
+        // TODO: Hier noch den Status verändern vom Request -> einmal Anfrage angenommen, heißt Request
+        // wird deaktiviert, weil es logischerweise keine zwei Fahrer geben kann!
+        const responseAcceptRideRequest = await fetch(
+          "http://localhost:8080/requests/driveoffers/" +
+            driveOfferId +
+            "/accept",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        location.reload();
+      }
+
+      async function rejectDriveOffer(driveOfferId) {
+        const response = await fetch(
+          "http://localhost:8080/requests/driveoffers/" +
+            driveOfferId +
+            "/reject",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        location.reload();
+      }
+    </script>
+  </body>
+</html>
